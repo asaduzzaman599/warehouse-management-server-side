@@ -68,11 +68,34 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
                 return res.send({ success: false, message: "Please provaide all informations" })
             }
 
+
             //inserted to db
             const result = await collectionProduct.insertOne(product);
             res.send({ success: true, message: `${product.name} inserted successfully!` })
 
 
+        })
+
+        //update product 
+        app.put('/product/:productId', async (req, res) => {
+
+            const id = req?.params?.productId
+            const { quantity, sold } = req?.body
+            const filter = {
+                _id: ObjectId(id)
+            }
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: {
+                    quantity, sold
+                },
+            };
+            const result = await collectionProduct.updateOne(filter, updateDoc, options);
+            if (result.acknowledged) {
+                res.send({ success: true, result })
+            } else {
+                res.send({ success: false, error: "Something is wrong" })
+            }
         })
 
         //delete product
