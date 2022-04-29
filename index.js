@@ -18,6 +18,32 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
         await client.connect()
         console.log("DB Connected")
         const collectionProduct = client.db('store_house').collection('product')
+
+        //get product data from db
+        app.get('/product', async (req, res) => {
+            const query = {}
+            //get product from db
+            const result = await collectionProduct.find(query).limit(2).toArray();
+            res.send(result)
+
+
+        })
+
+
+        //get product data depend on email  from db with jwt token verification
+        app.get('/myproduct', async (req, res) => {
+            const emailQuery = req.query.email
+            const query = {
+                email: emailQuery
+            }
+            //get product from db
+            const result = await collectionProduct.find(query).toArray();
+            res.send(result)
+
+
+        })
+
+        //post product data inserted to db
         app.post('/product', async (req, res) => {
             const product = req.body;
             //information check
@@ -26,7 +52,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
                 return res.send({ success: false, message: "Please provaide all informations" })
             }
 
-
+            //inserted to db
             const result = await collectionProduct.insertOne(product);
             res.send({ success: true, message: `${product.name} inserted successfully!` })
 
