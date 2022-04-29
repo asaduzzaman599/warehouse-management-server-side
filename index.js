@@ -1,7 +1,7 @@
 require('dotenv').config()
 const express = require('express');
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 const app = express()
 const port = process.env.PORT || 5000;
@@ -23,7 +23,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
         app.get('/product', async (req, res) => {
             const query = {}
             //get product from db
-            const result = await collectionProduct.find(query).limit(2).toArray();
+            const result = await collectionProduct.find(query).limit(0).toArray();
             res.send(result)
 
 
@@ -58,6 +58,26 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 
 
         })
+
+        //delete product
+        app.delete('/product/:productId', async (req, res) => {
+            const id = req.params.productId
+            const query = {
+                _id: ObjectId(id)
+            }
+            //get product from db
+            const result = await collectionProduct.deleteOne(query);
+
+
+            if (result?.acknowledged) {
+                res.send({ success: true, result })
+            } else {
+                res.send({ success: true, error: "Something is wrong" })
+            }
+
+        })
+
+
     } catch (err) {
         console.log(err)
     }
