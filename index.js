@@ -17,6 +17,21 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
     try {
         await client.connect()
         console.log("DB Connected")
+        const collectionProduct = client.db('store_house').collection('product')
+        app.post('/product', async (req, res) => {
+            const product = req.body;
+            //information check
+            console.log(product)
+            if (!product.name || !product.image || !product.description || !product.price || !product.quantity || !product.supplier || !product.email) {
+                return res.send({ success: false, message: "Please provaide all informations" })
+            }
+
+
+            const result = await collectionProduct.insertOne(product);
+            res.send({ success: true, message: `${product.name} inserted successfully!` })
+
+
+        })
     } catch (err) {
         console.log(err)
     }
