@@ -11,6 +11,21 @@ const port = process.env.PORT || 5000;
 app.use(cors())
 app.use(express.json())
 
+const tokenValidation = (req, res, next) => {
+    const token = req.headers.token
+    if (!token) {
+        return res.status(401).send({ message: 'unauthorized access' })
+    }
+    jwt.verify(token, process.env.ACCESS_TOKEN, function (err, decoded) {
+        if (err) {
+            return res.status(403).send({ message: 'forbidden access' })
+        }
+        req.decoded = decoded;
+        next()
+    });
+
+}
+
 //mongoDB
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.wls22.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
@@ -19,6 +34,16 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
         await client.connect()
         console.log("DB Connected")
         const collectionProduct = client.db('store_house').collection('product')
+
+
+        //login with jwt
+        app.post('/login', async (req, res) => {
+            const email = req.body.email
+            token = jwt.sign({
+                email
+            }, process.env.ACCESS_TOKEN, { expiresIn: "1d" });
+            res.send({ success: true, token })
+        })
 
         //get product data from db
         app.get('/products', async (req, res) => {
@@ -29,6 +54,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
             res.send(result)
 
         })
+
 
         //get one product
         app.get('/product/:productId', async (req, res) => {
@@ -48,14 +74,21 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
         })
 
         //get product data depend on email  from db with jwt token verification
-        app.get('/myproduct', async (req, res) => {
+        app.get('/myproduct', tokenValidation, async (req, res) => {
             const emailQuery = req.query.email
+            const decodedEmail = req.decoded.email;
+            console.log(decodedEmail, emailQuery)
+            if (emailQuery !== decodedEmail) {
+                return res.status(403).send({ message: 'forbidden access' })
+            }
             const query = {
                 email: emailQuery
             }
             //get product from db
             const result = await collectionProduct.find(query).toArray();
-            res.send(result)
+            res.send({
+                success: true, result
+            })
 
 
         })
@@ -64,7 +97,6 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
         app.post('/product', async (req, res) => {
             const product = req.body;
             //information check
-            console.log(product)
             if (!product.name || !product.image || !product.description || !product.price || !product.quantity || !product.supplier || !product.email) {
                 return res.send({ success: false, message: "Please provaide all informations" })
             }
