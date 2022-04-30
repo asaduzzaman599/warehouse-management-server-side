@@ -55,6 +55,19 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 
         })
 
+        app.get('/allproducts', async (req, res) => {
+            const page = +req?.query?.page
+            const size = +req?.query?.size
+            console.log(page, size)
+            const query = {}
+            //get product from db
+            const cursor = collectionProduct.find(query);
+            const count = await collectionProduct.countDocuments()
+            const result = await cursor.skip(page * size).limit(size).toArray();
+            res.send({ success: true, result, count })
+
+        })
+
 
         //get one product
         app.get('/product/:productId', async (req, res) => {
