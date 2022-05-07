@@ -12,7 +12,7 @@ app.use(cors())
 app.use(express.json())
 
 const tokenValidation = (req, res, next) => {
-    const token = req.headers.token
+    const token = req.headers.token.split(' ')[1]
     if (!token) {
         return res.status(401).send({ message: 'unauthorized access' })
     }
