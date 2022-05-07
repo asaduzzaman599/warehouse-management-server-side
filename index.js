@@ -50,7 +50,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
             const limit = +req?.query?.limit || 0
             const query = {}
             //get product from db
-            const result = await collectionProduct.find(query).limit(limit).toArray();
+            const result = await collectionProduct.find(query).sort({ sold: -1 }).limit(limit).toArray();
             res.send(result)
 
         })
