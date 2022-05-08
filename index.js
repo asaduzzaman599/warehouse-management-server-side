@@ -47,7 +47,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
             res.send({ success: true, token })
         })
 
-        //get product data from db
+        //get all product data from db
         app.get('/products', async (req, res) => {
             const limit = +req?.query?.limit || 0
             const query = {}
@@ -57,7 +57,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 
         })
 
-        //return response of all data
+        //return response of data 
         app.get('/allproducts', async (req, res) => {
             const page = +req?.query?.page
             const size = +req?.query?.size
@@ -110,6 +110,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
         //post product data inserted to db
         app.post('/product', async (req, res) => {
             const product = req.body;
+            console.log('hello')
             //information check
             if (!product.name || !product.image || !product.description || !product.price || !product.quantity || !product.supplier || !product.email) {
                 return res.send({ success: false, message: "Please provaide all informations" })
@@ -145,7 +146,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
             }
         })
 
-        //delete product
+        //delete product matching with id
         app.delete('/product/:productId', async (req, res) => {
             const id = req.params.productId
             const query = {
