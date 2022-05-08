@@ -1,8 +1,8 @@
 # StoreHouse-controller -  - Server Side
 
 
-Live SIte [Click here](https://m-s-capture-asaduzzaman599.web.app/).
-Live Link https://m-s-capture-asaduzzaman599.web.app/.
+Live SIte [Click here](https://storehouse-asaduzzaman599.web.app/).
+Live Link https://storehouse-asaduzzaman599.web.app/.
 
 Client side[Click here](https://github.com/ProgrammingHeroWC4/warehouse-management-client-side-asaduzzaman599).
 
