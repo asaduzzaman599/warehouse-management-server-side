@@ -11,6 +11,7 @@ const port = process.env.PORT || 5000;
 app.use(cors())
 app.use(express.json())
 
+//validation token and if valid allow to pass data or send error message
 const tokenValidation = (req, res, next) => {
     const token = req.headers.token.split(' ')[1]
     if (!token) {
@@ -31,6 +32,7 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@clu
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 (async () => {
     try {
+        //connecting with db
         await client.connect()
         console.log("DB Connected")
         const collectionProduct = client.db('store_house').collection('product')
@@ -55,10 +57,10 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 
         })
 
+        //return response of all data
         app.get('/allproducts', async (req, res) => {
             const page = +req?.query?.page
             const size = +req?.query?.size
-            console.log(page, size)
             const query = {}
             //get product from db
             const cursor = collectionProduct.find(query);
@@ -69,13 +71,12 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
         })
 
 
-        //get one product
+        //get one product matching with id
         app.get('/product/:productId', async (req, res) => {
             const id = req?.params?.productId
             const query = {
                 _id: ObjectId(id)
             }
-            console.log(id)
             //get product from db
             const result = await collectionProduct.findOne(query);
 
@@ -90,7 +91,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
         app.get('/myproduct', tokenValidation, async (req, res) => {
             const emailQuery = req.query.email
             const decodedEmail = req.decoded.email;
-            console.log(decodedEmail, emailQuery)
+
             if (emailQuery !== decodedEmail) {
                 return res.status(403).send({ message: 'forbidden access' })
             }
@@ -122,7 +123,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 
         })
 
-        //update product 
+        //update product matching with the id
         app.put('/product/:productId', async (req, res) => {
 
             const id = req?.params?.productId

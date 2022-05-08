@@ -6,6 +6,7 @@ Live Link https://storehouse-asaduzzaman599.web.app/.
 
 Client side[Click here](https://github.com/ProgrammingHeroWC4/warehouse-management-client-side-asaduzzaman599).
 
+
 ## About Website
 
 - Store house controller is a website for inventory management to help maintain the warehouse product.
@@ -14,6 +15,8 @@ Client side[Click here](https://github.com/ProgrammingHeroWC4/warehouse-manageme
 - Private route for add items ensuring that user have to logged in to navigate this page and JWT for authorized to get his added items.
 - User can login with Email, Password and Google account.
 - User can varify and can reset password with mail.
+- All items data will store in mongodb data base.
+- Server created with nodejs for smooth and first performance. 
 
 
 ### Technologies Used
